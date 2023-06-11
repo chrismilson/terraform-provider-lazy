@@ -6,8 +6,7 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
-
-	"terraform-provider-lazy/internal/provider"
+	"github.com/hashicorp/terraform-provider-scaffolding-framework/internal/provider"
 )
 
 // Run "go generate" to format example terraform files and generate the docs for the registry/website
@@ -36,7 +35,8 @@ func main() {
 	flag.Parse()
 
 	opts := providerserver.ServeOpts{
-		Address: "registry.terraform.io/chrismilson/lazy",
+		// TODO: Update this string with the published name of your provider.
+		Address: "registry.terraform.io/hashicorp/scaffolding",
 		Debug:   debug,
 	}
 
