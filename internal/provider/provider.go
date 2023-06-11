@@ -19,7 +19,7 @@ type LazyProvider struct {
 	version string
 }
 
-type LazyProviderModel struct {}
+type LazyProviderModel struct{}
 
 func (p *LazyProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
 	resp.TypeName = "lazy"
@@ -30,12 +30,13 @@ func (p *LazyProvider) Schema(ctx context.Context, req provider.SchemaRequest, r
 	resp.Schema = schema.Schema{}
 }
 
-func (p *LazyProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {}
+func (p *LazyProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
+}
 
 func (p *LazyProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-    NewLazyStringResource,
-  }
+		NewLazyStringResource,
+	}
 }
 
 func (p *LazyProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
@@ -49,4 +50,3 @@ func New(version string) func() provider.Provider {
 		}
 	}
 }
-
