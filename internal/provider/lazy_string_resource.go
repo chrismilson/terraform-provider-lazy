@@ -29,6 +29,7 @@ func (r *lazyStringResource) Metadata(_ context.Context, req resource.MetadataRe
 
 func (r *lazyStringResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `This is a logical resource (like ` + "`null_resource`" + `) that will maintain its previous value unless an explicit update value is specified.`,
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: `This is set to a random value at create time.`,
