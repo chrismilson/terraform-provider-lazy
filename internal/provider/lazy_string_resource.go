@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	_ resource.Resource               = &lazyStringResource{}
-	_ resource.ResourceWithModifyPlan = &lazyStringResource{}
+	_ resource.Resource                = &lazyStringResource{}
+	_ resource.ResourceWithModifyPlan  = &lazyStringResource{}
+	_ resource.ResourceWithImportState = &lazyStringResource{}
 )
 
 type lazyStringResource struct{}
@@ -140,6 +141,23 @@ func (r *lazyStringResource) Update(ctx context.Context, req resource.UpdateRequ
 
 	if plan.Result != state.Result {
 		plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
+	} else {
+		plan.LastUpdated = state.LastUpdated
+	}
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+}
+
+func (r *lazyStringResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	plan := lazyStringResourceModel{
+		ID:          types.StringValue(fmt.Sprintf("%d", rand.Int())),
+		LastUpdated: types.StringValue(time.Now().Format(time.RFC850)),
+		Explicitly:  types.StringValue(req.ID),
+		Initially:   types.StringValue(req.ID),
+		Result:      types.StringValue(req.ID),
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)

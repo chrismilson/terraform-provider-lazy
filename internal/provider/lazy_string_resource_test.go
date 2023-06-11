@@ -138,3 +138,67 @@ func TestAccLazyStringResource_ExplicitValue_Unset_NoChanges(t *testing.T) {
 		},
 	})
 }
+
+func TestAccLazyStringResource_Import_basic(t *testing.T) {
+	dsn := "lazy_string.test"
+
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProviderFactories(),
+		Steps: []resource.TestStep{
+			{
+				Config: `
+        resource "lazy_string" "test" {
+          initially  = "initial_value"
+          explicitly = "explicit_value"
+        }`,
+				ImportState:        true,
+				ResourceName:       dsn,
+				ImportStateId:      "imported_value",
+				ImportStatePersist: true,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(dsn, "result", "imported_value"),
+					resource.TestCheckResourceAttr(dsn, "explicitly", "imported_value"),
+					resource.TestCheckResourceAttr(dsn, "initially", "imported_value"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccLazyStringResource_Import_Keep(t *testing.T) {
+	dsn := "lazy_string.test"
+
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProviderFactories(),
+		Steps: []resource.TestStep{
+			{
+				Config: `
+        resource "lazy_string" "test" {
+          initially  = "initial_value"
+          explicitly = "explicit_value"
+        }`,
+				ImportState:        true,
+				ResourceName:       dsn,
+				ImportStateId:      "imported_value",
+				ImportStatePersist: true,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(dsn, "result", "imported_value"),
+					resource.TestCheckResourceAttr(dsn, "explicitly", "imported_value"),
+					resource.TestCheckResourceAttr(dsn, "initially", "imported_value"),
+				),
+			},
+			{
+				Config: `
+        resource "lazy_string" "test" {
+          initially  = "initial_value"
+          explicitly = null
+        }`,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(dsn, "result", "imported_value"),
+					resource.TestCheckResourceAttr(dsn, "explicitly", "imported_value"),
+					resource.TestCheckResourceAttr(dsn, "initially", "initial_value"),
+				),
+			},
+		},
+	})
+}
