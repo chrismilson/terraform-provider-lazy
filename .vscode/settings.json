@@ -1,0 +1,6 @@
+{
+    "go.testEnvVars": {
+        // Uncomment to run Acceptance tests
+        "TF_ACC": "1",
+    }
+}
