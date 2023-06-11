@@ -169,5 +169,6 @@ func (r *lazyStringResource) ImportState(ctx context.Context, req resource.Impor
 
 func (r *lazyStringResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 }
+
 func (r *lazyStringResource) Delete(_ context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 }
