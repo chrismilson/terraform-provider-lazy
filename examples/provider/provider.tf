@@ -17,5 +17,5 @@ resource "lazy_string" "image_digest" {
 }
 
 output "image" {
-  value = "alpine@${lazy_string.image_digest}"
+  value = "alpine@${lazy_string.image_digest.result}"
 }
