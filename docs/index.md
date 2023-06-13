@@ -3,30 +3,15 @@
 page_title: "lazy Provider"
 subcategory: ""
 description: |-
-  Maintaining a Terraform configuration so that it can encode several different deployment contexts is difficult.
-  Some contexts may be aware of values that others are not: If you run Terraform in CI/CD pipelines and one pipeline
-  does some preliminary calculation to set a variable, other pipelines or attempts to run the Terraform locally may
-  be difficult to implement, just because they need to work out a meaningful value to set.
-  
-  The `lazy` provider is an attempt at a solution to this issue; it provides a resource that will track a 
-  value and only update its result if a new value is explicitly given. In the hypothetical situation mentioned
-  above, one pipeline might always set a value for a specific variable, while some may always leave it null. instead
-  of Terraform requiring the value to be set, the previous value will automatically be used, and there will be no
-  changes to resources that depend on that variable.
+  Maintaining a Terraform configuration so that it can encode several different deployment contexts is difficult.  Some contexts may be aware of values that others are not: If you run Terraform in CI/CD pipelines and one pipeline does some preliminary calculation to set a variable, other pipelines or attempts to run the Terraform locally may be difficult to implement, just because they need to work out a meaningful value to set.
+  The lazy provider is an attempt at a solution to this issue; it provides a resource that will track a value and only update its result if a new value is explicitly given. In the hypothetical situation mentioned above, one pipeline might always set a value for a specific variable, while some may always leave it null. instead of Terraform requiring the value to be set, the previous value will automatically be used, and there will be no changes to resources that depend on that variable.
 ---
 
 # lazy Provider
 
-Maintaining a Terraform configuration so that it can encode several different deployment contexts is difficult.
-    Some contexts may be aware of values that others are not: If you run Terraform in CI/CD pipelines and one pipeline
-    does some preliminary calculation to set a variable, other pipelines or attempts to run the Terraform locally may
-    be difficult to implement, just because they need to work out a meaningful value to set.
+Maintaining a Terraform configuration so that it can encode several different deployment contexts is difficult.  Some contexts may be aware of values that others are not: If you run Terraform in CI/CD pipelines and one pipeline does some preliminary calculation to set a variable, other pipelines or attempts to run the Terraform locally may be difficult to implement, just because they need to work out a meaningful value to set.
 
-    The `lazy` provider is an attempt at a solution to this issue; it provides a resource that will track a 
-    value and only update its result if a new value is explicitly given. In the hypothetical situation mentioned
-    above, one pipeline might always set a value for a specific variable, while some may always leave it null. instead
-    of Terraform requiring the value to be set, the previous value will automatically be used, and there will be no
-    changes to resources that depend on that variable.
+The `lazy` provider is an attempt at a solution to this issue; it provides a resource that will track a value and only update its result if a new value is explicitly given. In the hypothetical situation mentioned above, one pipeline might always set a value for a specific variable, while some may always leave it null. instead of Terraform requiring the value to be set, the previous value will automatically be used, and there will be no changes to resources that depend on that variable.
 
 ## Example Usage
 
@@ -50,7 +35,7 @@ resource "lazy_string" "image_digest" {
 }
 
 output "image" {
-  value = "alpine@${lazy_string.image_digest}"
+  value = "alpine@${lazy_string.image_digest.result}"
 }
 ```
 
