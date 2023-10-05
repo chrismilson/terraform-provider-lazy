@@ -58,6 +58,34 @@ func TestAccLazyStringResource_InitialValue_basic(t *testing.T) {
 	})
 }
 
+func TestAccLazyStringResource_InitialValue_changes_after_creation(t *testing.T) {
+	dsn := "lazy_string.test"
+
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProviderFactories(),
+		Steps: []resource.TestStep{
+			{
+				Config: `
+        resource "lazy_string" "test" {
+          initially  = "initial_value"
+        }`,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(dsn, "result", "initial_value"),
+				),
+			},
+			{
+				Config: `
+        resource "lazy_string" "test" {
+          initially  = "updated_value"
+        }`,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(dsn, "result", "initial_value"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccLazyStringResource_ExplicitValue_SetOnCreate(t *testing.T) {
 	dsn := "lazy_string.test"
 
