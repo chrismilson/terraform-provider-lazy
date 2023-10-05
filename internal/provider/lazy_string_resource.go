@@ -105,8 +105,13 @@ func (r *lazyStringResource) ModifyPlan(ctx context.Context, req resource.Modify
 
 	// Calculate "result"
 	if plan.Explicitly != types.StringNull() {
+		// If there is an explicit value, that should be the result
 		plan.Result = plan.Explicitly
+	} else if state.Result != types.StringNull() {
+		// If there was a value in the past, the result should not change
+		plan.Result = state.Result
 	} else {
+		// If there was no value in the past, the result should be the initial value
 		plan.Result = plan.Initially
 	}
 
