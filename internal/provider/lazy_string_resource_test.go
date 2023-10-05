@@ -58,7 +58,7 @@ func TestAccLazyStringResource_InitialValue_basic(t *testing.T) {
 	})
 }
 
-func TestAccLazyStringResource_InitialValue_changes_after_creation(t *testing.T) {
+func TestAccLazyStringResource_InitialValue_Update_NoChanges(t *testing.T) {
 	dsn := "lazy_string.test"
 
 	resource.Test(t, resource.TestCase{
