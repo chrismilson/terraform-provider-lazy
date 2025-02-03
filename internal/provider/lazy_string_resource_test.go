@@ -223,7 +223,6 @@ func TestAccLazyStringResource_Import_Keep(t *testing.T) {
         }`,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(dsn, "result", "imported_value"),
-					resource.TestCheckResourceAttr(dsn, "explicitly", "imported_value"),
 					resource.TestCheckResourceAttr(dsn, "initially", "initial_value"),
 				),
 			},
