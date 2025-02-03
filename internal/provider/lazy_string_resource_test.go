@@ -240,7 +240,7 @@ func TestAccLazyStringResource_InitialValue_KnownAtApply(t *testing.T) {
 			{
 				Config: `
 				resource "lazy_string" "test" {
-					initially = length(timestamp()) > 0 ? "known-at-apply" : "never"
+					initially = length(timestamp()) > 0 ? "known_at_apply" : "never"
 				}`,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet(dsn, "id"),
@@ -262,7 +262,7 @@ func TestAccLazyStringResource_ExplicitValue_KnownAtApply(t *testing.T) {
 			{
 				Config: `
 				resource "lazy_string" "test" {
-					explicitly = length(timestamp()) > 0 ? "known-at-apply" : "never"
+					explicitly = length(timestamp()) > 0 ? "known_at_apply" : "never"
 				}`,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet(dsn, "id"),
