@@ -91,29 +91,7 @@ func (r *lazyStringResource) ModifyPlan(ctx context.Context, req resource.Modify
 		plan.ID = state.ID
 	}
 
-	// Calculate "initially"
-	if plan.Initially == types.StringNull() || plan.Initially == types.StringUnknown() {
-		// When omitted, there should be no changes in the plan
-		plan.Initially = state.Initially
-	}
-
-	// Calculate "explicitly"
-	if plan.Explicitly == types.StringNull() || plan.Explicitly == types.StringUnknown() {
-		// When omitted, there should be no changes in the plan
-		plan.Explicitly = state.Explicitly
-	}
-
-	// Calculate "result"
-	if plan.Explicitly != types.StringNull() {
-		// If there is an explicit value, that should be the result
-		plan.Result = plan.Explicitly
-	} else if state.Result != types.StringNull() {
-		// If there was a value in the past, the result should not change
-		plan.Result = state.Result
-	} else {
-		// If there was no value in the past, the result should be the initial value
-		plan.Result = plan.Initially
-	}
+	Calculate(&plan, state, false)
 
 	resp.Diagnostics.Append(resp.Plan.Set(ctx, plan)...)
 	if resp.Diagnostics.HasError() {
@@ -131,6 +109,8 @@ func (r *lazyStringResource) Create(ctx context.Context, req resource.CreateRequ
 	plan.ID = types.StringValue(fmt.Sprintf("%d", rand.Int()))
 	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
 
+	Calculate(&plan, lazyStringResourceModel{}, true)
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -144,6 +124,8 @@ func (r *lazyStringResource) Update(ctx context.Context, req resource.UpdateRequ
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	Calculate(&plan, state, true)
 
 	if plan.Result != state.Result {
 		plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
@@ -176,4 +158,21 @@ func (r *lazyStringResource) Read(ctx context.Context, req resource.ReadRequest,
 }
 
 func (r *lazyStringResource) Delete(_ context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+}
+
+func Calculate(plan *lazyStringResourceModel, state lazyStringResourceModel, mustKnow bool) {
+	if mustKnow && plan.Explicitly == types.StringUnknown() {
+		plan.Explicitly = types.StringNull()
+	}
+	if mustKnow && plan.Initially == types.StringUnknown() {
+		plan.Initially = types.StringNull()
+	}
+
+	if plan.Explicitly != types.StringNull() {
+		plan.Result = plan.Explicitly
+	} else if state.Result != types.StringNull() {
+		plan.Result = state.Result
+	} else {
+		plan.Result = plan.Initially
+	}
 }
