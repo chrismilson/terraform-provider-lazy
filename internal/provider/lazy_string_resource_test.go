@@ -230,3 +230,47 @@ func TestAccLazyStringResource_Import_Keep(t *testing.T) {
 		},
 	})
 }
+
+func TestAccLazyStringResource_InitialValue_KnownAtApply(t *testing.T) {
+	dsn := "lazy_string.test"
+
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProviderFactories(),
+		Steps: []resource.TestStep{
+			{
+				Config: `
+				resource "lazy_string" "test" {
+					initially = length(timestamp()) > 0 ? "known-at-apply" : "never"
+				}`,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet(dsn, "id"),
+					resource.TestCheckResourceAttrSet(dsn, "last_updated"),
+					resource.TestCheckResourceAttr(dsn, "initially", "known_at_apply"),
+					resource.TestCheckResourceAttr(dsn, "result", "known_at_apply"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccLazyStringResource_ExplicitValue_KnownAtApply(t *testing.T) {
+	dsn := "lazy_string.test"
+
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProviderFactories(),
+		Steps: []resource.TestStep{
+			{
+				Config: `
+				resource "lazy_string" "test" {
+					explicitly = length(timestamp()) > 0 ? "known-at-apply" : "never"
+				}`,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet(dsn, "id"),
+					resource.TestCheckResourceAttrSet(dsn, "last_updated"),
+					resource.TestCheckResourceAttr(dsn, "explicitly", "known_at_apply"),
+					resource.TestCheckResourceAttr(dsn, "result", "known_at_apply"),
+				),
+			},
+		},
+	})
+}
