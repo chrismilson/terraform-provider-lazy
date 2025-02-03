@@ -119,6 +119,23 @@ func (r *lazyStringResource) Create(ctx context.Context, req resource.CreateRequ
 	plan.ID = types.StringValue(fmt.Sprintf("%d", rand.Int()))
 	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
 
+	// Values must be known after apply. If they are still unknown, they should be null.
+	if plan.Explicitly == types.StringUnknown() {
+		plan.Explicitly = types.StringNull()
+	}
+	if plan.Initially == types.StringUnknown() {
+		plan.Initially = types.StringNull()
+	}
+	if plan.Result == types.StringUnknown() {
+		if plan.Explicitly != types.StringNull() {
+			plan.Result = plan.Explicitly
+		} else if plan.Initially != types.StringNull() {
+			plan.Result = plan.Initially
+		} else {
+			plan.Result = types.StringNull()
+		}
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -131,6 +148,23 @@ func (r *lazyStringResource) Update(ctx context.Context, req resource.UpdateRequ
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
+	}
+
+	// Values must be known after apply. If they are still unknown, they should be null.
+	if plan.Explicitly == types.StringUnknown() {
+		plan.Explicitly = types.StringNull()
+	}
+	if plan.Initially == types.StringUnknown() {
+		plan.Initially = types.StringNull()
+	}
+	if plan.Result == types.StringUnknown() {
+		if plan.Explicitly != types.StringNull() {
+			plan.Result = plan.Explicitly
+		} else if plan.Initially != types.StringNull() {
+			plan.Result = plan.Initially
+		} else {
+			plan.Result = types.StringNull()
+		}
 	}
 
 	if plan.Result != state.Result {
