@@ -91,17 +91,7 @@ func (r *lazyStringResource) ModifyPlan(ctx context.Context, req resource.Modify
 		plan.ID = state.ID
 	}
 
-	// Calculate "result"
-	if plan.Explicitly != types.StringNull() {
-		// If there is an explicit value, that should be the result
-		plan.Result = plan.Explicitly
-	} else if state.Result != types.StringNull() {
-		// If there was a value in the past, the result should not change
-		plan.Result = state.Result
-	} else {
-		// If there was no value in the past, the result should be the initial value
-		plan.Result = plan.Initially
-	}
+	Calculate(&plan, state, false)
 
 	resp.Diagnostics.Append(resp.Plan.Set(ctx, plan)...)
 	if resp.Diagnostics.HasError() {
@@ -119,22 +109,7 @@ func (r *lazyStringResource) Create(ctx context.Context, req resource.CreateRequ
 	plan.ID = types.StringValue(fmt.Sprintf("%d", rand.Int()))
 	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
 
-	// Values must be known after apply. If they are still unknown, they should be null.
-	if plan.Explicitly == types.StringUnknown() {
-		plan.Explicitly = types.StringNull()
-	}
-	if plan.Initially == types.StringUnknown() {
-		plan.Initially = types.StringNull()
-	}
-	if plan.Result == types.StringUnknown() {
-		if plan.Explicitly != types.StringNull() {
-			plan.Result = plan.Explicitly
-		} else if plan.Initially != types.StringNull() {
-			plan.Result = plan.Initially
-		} else {
-			plan.Result = types.StringNull()
-		}
-	}
+	Calculate(&plan, lazyStringResourceModel{}, true)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)
 	if resp.Diagnostics.HasError() {
@@ -150,22 +125,7 @@ func (r *lazyStringResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	// Values must be known after apply. If they are still unknown, they should be null.
-	if plan.Explicitly == types.StringUnknown() {
-		plan.Explicitly = types.StringNull()
-	}
-	if plan.Initially == types.StringUnknown() {
-		plan.Initially = types.StringNull()
-	}
-	if plan.Result == types.StringUnknown() {
-		if plan.Explicitly != types.StringNull() {
-			plan.Result = plan.Explicitly
-		} else if plan.Initially != types.StringNull() {
-			plan.Result = plan.Initially
-		} else {
-			plan.Result = types.StringNull()
-		}
-	}
+	Calculate(&plan, state, true)
 
 	if plan.Result != state.Result {
 		plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
@@ -198,4 +158,21 @@ func (r *lazyStringResource) Read(ctx context.Context, req resource.ReadRequest,
 }
 
 func (r *lazyStringResource) Delete(_ context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+}
+
+func Calculate(plan *lazyStringResourceModel, state lazyStringResourceModel, mustKnow bool) {
+	if mustKnow && plan.Explicitly == types.StringUnknown() {
+		plan.Explicitly = types.StringNull()
+	}
+	if mustKnow && plan.Initially == types.StringUnknown() {
+		plan.Initially = types.StringNull()
+	}
+
+	if plan.Explicitly != types.StringNull() {
+		plan.Result = plan.Explicitly
+	} else if state.Result != types.StringNull() {
+		plan.Result = state.Result
+	} else {
+		plan.Result = plan.Initially
+	}
 }
