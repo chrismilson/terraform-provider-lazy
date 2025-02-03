@@ -91,18 +91,6 @@ func (r *lazyStringResource) ModifyPlan(ctx context.Context, req resource.Modify
 		plan.ID = state.ID
 	}
 
-	// Calculate "initially"
-	if plan.Initially == types.StringNull() || plan.Initially == types.StringUnknown() {
-		// When omitted, there should be no changes in the plan
-		plan.Initially = state.Initially
-	}
-
-	// Calculate "explicitly"
-	if plan.Explicitly == types.StringNull() || plan.Explicitly == types.StringUnknown() {
-		// When omitted, there should be no changes in the plan
-		plan.Explicitly = state.Explicitly
-	}
-
 	// Calculate "result"
 	if plan.Explicitly != types.StringNull() {
 		// If there is an explicit value, that should be the result
