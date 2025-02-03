@@ -249,6 +249,18 @@ func TestAccLazyStringResource_InitialValue_KnownAtApply(t *testing.T) {
 					resource.TestCheckResourceAttr(dsn, "result", "known_at_apply"),
 				),
 			},
+			{
+				Config: `
+				resource "lazy_string" "test" {
+					initially = "known_at_plan"
+				}`,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet(dsn, "id"),
+					resource.TestCheckResourceAttrSet(dsn, "last_updated"),
+					resource.TestCheckResourceAttr(dsn, "initially", "known_at_plan"),
+					resource.TestCheckResourceAttr(dsn, "result", "known_at_apply"),
+				),
+			},
 		},
 	})
 }
@@ -269,6 +281,18 @@ func TestAccLazyStringResource_ExplicitValue_KnownAtApply(t *testing.T) {
 					resource.TestCheckResourceAttrSet(dsn, "last_updated"),
 					resource.TestCheckResourceAttr(dsn, "explicitly", "known_at_apply"),
 					resource.TestCheckResourceAttr(dsn, "result", "known_at_apply"),
+				),
+			},
+			{
+				Config: `
+				resource "lazy_string" "test" {
+					explicitly = "known_at_plan"
+				}`,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrSet(dsn, "id"),
+					resource.TestCheckResourceAttrSet(dsn, "last_updated"),
+					resource.TestCheckResourceAttr(dsn, "explicitly", "known_at_plan"),
+					resource.TestCheckResourceAttr(dsn, "result", "known_at_plan"),
 				),
 			},
 		},
