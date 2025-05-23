@@ -14,10 +14,20 @@ Please see the [GitHub template repository documentation](https://help.github.co
 
 Once you've written your provider, you'll want to [publish it on the Terraform Registry](https://www.terraform.io/docs/registry/providers/publishing.html) so that others can use it.
 
+## Framework Upgrade
+
+This provider has been upgraded to use the latest Terraform Plugin Framework v1.12.0, providing improved performance, enhanced type safety, and better developer experience. The upgrade maintains full backward compatibility with existing configurations.
+
+**Key improvements:**
+- Updated from Plugin Framework v1.3.5 to v1.12.0
+- Go version updated from 1.19 to 1.22.0
+- Enhanced validation and error handling
+- Improved testing capabilities
+
 ## Requirements
 
 - [Terraform](https://www.terraform.io/downloads.html) >= 1.0
-- [Go](https://golang.org/doc/install) >= 1.19
+- [Go](https://golang.org/doc/install) >= 1.21
 
 ## Building The Provider
 
